@@ -1,38 +1,12 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import PropTypes from 'prop-types';
 import { styled } from '@storybook/theming';
+import { Icons, IconButton } from '@storybook/components';
 
-const Context = React.createContext();
-
-class Provider extends Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-  };
-
-  state = {
-    grid: false,
-    value: 'transparent',
-  };
-
-  setValue = value => this.setState({ value });
-
-  setGrid = grid => this.setState({ grid });
-
-  render() {
-    const { setValue, setGrid } = this;
-    const { children } = this.props;
-    const { value, grid } = this.state;
-
-    return (
-      <Context.Provider value={{ value, setValue, grid, setGrid }}>{children}</Context.Provider>
-    );
-  }
-}
-
-const { Consumer } = Context;
-
-function createGridStyles(cellSize) {
+/**
+ * Styled
+ */
+const createGridStyles = (cellSize: number): any => {
   const cellSizeDoubled = cellSize * 2;
   const cellSizeSquared = cellSize ** 2;
 
@@ -74,7 +48,7 @@ function createGridStyles(cellSize) {
     backgroundPosition: '-2px -2px',
     mixBlendMode: 'difference',
   };
-}
+};
 
 const Grid = styled.div(
   {
@@ -83,8 +57,8 @@ const Grid = styled.div(
     left: 0,
     width: '100%',
     height: '100%',
-  },
-  ({ theme }) => createGridStyles(theme.background.gridCellSize)
+  } as any,
+  ({ theme }: any) => createGridStyles(theme.background.gridCellSize)
 );
 
 const Background = styled.div(
@@ -104,7 +78,53 @@ const Background = styled.div(
       border: '0 none',
     },
   },
-  ({ theme }) => ({ background: theme.background.content })
+  ({ theme }: any) => ({ background: theme.background.content })
 );
 
-export { Grid, Background, Consumer as BackgroundConsumer, Provider as BackgroundProvider };
+/**
+ * Context
+ */
+interface BackgroundContext {
+  grid: boolean;
+  setGrid: Function;
+  value: string;
+  setValue: Function;
+}
+
+const BackgroundContext = React.createContext<BackgroundContext>(null as any);
+
+/**
+ * Widgets
+ */
+export const BackgroundConsumer = BackgroundContext.Consumer;
+
+export const BackgroundProvider: React.FunctionComponent = ({ children }) => {
+  const [grid, setGrid] = useState(false);
+  const [value, setValue] = useState('transparent');
+  return (
+    <BackgroundContext.Provider value={{ value, setValue, grid, setGrid }}>
+      {children}
+    </BackgroundContext.Provider>
+  );
+};
+
+export const DefaultBackground: React.FunctionComponent = ({ children }) => (
+  <BackgroundConsumer>
+    {({ grid, value }) => (
+      <Background id="storybook-preview-background" value={value}>
+        {grid ? <Grid /> : null}
+        {children}
+      </Background>
+    )}
+  </BackgroundConsumer>
+);
+
+export const BackgroundWidgets = () => (
+  <BackgroundConsumer>
+    {({ grid, setGrid }) => (
+      <IconButton active={!!grid} onClick={() => setGrid(!grid)} title="Toggle background grid">
+        <Icons icon="grid" />
+      </IconButton>
+    )}
+  </BackgroundConsumer>
+);

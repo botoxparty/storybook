@@ -1,14 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-
-import Panel from './panel';
+import { AddonPanel } from './AddonPanel';
 
 export const panels = {
   test1: {
     title: 'Test 1',
     // eslint-disable-next-line react/prop-types
-    render: ({ active, key }) =>
+    render: ({ active, key }: any) =>
       active ? (
         <div id="test1" key={key}>
           TEST 1
@@ -18,7 +17,7 @@ export const panels = {
   test2: {
     title: 'Test 2',
     // eslint-disable-next-line react/prop-types
-    render: ({ active, key }) =>
+    render: ({ active, key }: any) =>
       active ? (
         <div id="test2" key={key}>
           TEST 2
@@ -33,12 +32,12 @@ const togglePosition = action('togglePosition');
 
 storiesOf('UI|Panel', module)
   .add('default', () => (
-    <Panel
+    <AddonPanel
       panels={panels}
       actions={{ onSelect, toggleVisibility, togglePosition }}
       selectedPanel="test2"
     />
   ))
   .add('no panels', () => (
-    <Panel panels={{}} actions={{ onSelect, toggleVisibility, togglePosition }} />
+    <AddonPanel panels={{}} actions={{ onSelect, toggleVisibility, togglePosition }} />
   ));

@@ -1,13 +1,6 @@
 import React from 'react';
-
-import NotificationList from './notifications';
-import * as NotificationItemStories from './item.stories';
-
-export default {
-  component: NotificationList,
-  title: 'UI|Notifications/Notifications',
-  decorators: [storyFn => <div style={{ width: '240px', margin: '1rem' }}>{storyFn()}</div>],
-};
+import { NotificationList } from './NotificationList';
+import * as NotificationItemStories from './NotificationItem.stories';
 
 const notifications = Object.values(NotificationItemStories)
   .filter(s => s.storyData)
@@ -29,3 +22,9 @@ export const placement = () => (
   />
 );
 all.storyData = { notifications };
+
+export default {
+  component: NotificationList,
+  title: 'UI|Notifications/Notifications',
+  decorators: [storyFn => <div style={{ width: '240px', margin: '1rem' }}>{storyFn()}</div>],
+};
